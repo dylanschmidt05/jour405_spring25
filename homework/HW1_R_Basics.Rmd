@@ -1,5 +1,6 @@
 ---
 title: "HW1: R Basics"
+name: "Dylan"
 ---
 
 ## Getting Started with R
