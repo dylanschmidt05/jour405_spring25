@@ -66,3 +66,10 @@ Violent and property crime rates increased from 2019 to 2020 in Maryland, accord
 ### Task 9: Save Your Work and Put it on GitHub
 
 Save this notebook, then commit it to your local repository. Push the changes to your GitHub repository and submit the URL for this file in ELMS.
+
+### Task 10: Percentiles
+
+md_cities_percentiles <- md_cities_rates |> mutate(percentile = ntile(violent_rate_2020, 100))
+md_cities_IQR <- md_cities_rates |> summarize(IQR = IQR(violent_rate_2020))
+
+There are 10 cities that are above the 90th percentile. I would say that these results don't really change my best story idea too much as I was already going to incorporate discussion of Ocean City's high crime rates.
