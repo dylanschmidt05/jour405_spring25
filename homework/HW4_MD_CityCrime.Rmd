@@ -69,7 +69,10 @@ Save this notebook, then commit it to your local repository. Push the changes to
 
 ### Task 10: Percentiles
 
+```{r}
 md_cities_percentiles <- md_cities_rates |> mutate(percentile = ntile(violent_rate_2020, 100))
 md_cities_IQR <- md_cities_rates |> summarize(IQR = IQR(violent_rate_2020))
+```
+
 
 There are 10 cities that are above the 90th percentile. I would say that these results don't really change my best story idea too much as I was already going to incorporate discussion of Ocean City's high crime rates.
