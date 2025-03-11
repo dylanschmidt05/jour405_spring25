@@ -71,12 +71,15 @@ sample_40 <- transit_ridership |>
   sample_n(40)
 sample_40 |> summarize(sample_mean_bus = mean(bus), sample_sd_bus = sd(bus))
 sample_40 |> summarize(sample_mean_rail = mean(rail), sample_sd_rail = sd(rail))
-transit_weekday <- transit_ridership |> 
-  group_by(weekday)
-  summarize(mean_bus_monday = mean(monday)
+transit_weekday_bus <- transit_ridership |> 
+  group_by(weekday) |> 
+  summarize(mean_weekday_bus = mean(bus))
+transit_weekday_rail <- transit_ridership |> 
+  group_by(weekday) |> 
+  summarize(mean_weekday_rail = mean(rail))
 ```
 
-
+I used a sample size of 40 because the population of the data is 420 and the sample size is supposed to be right around 10 percent of the population size. The sample mean and sample standard deviation for the bus are relatively close to the mean and standard deviation of the whole population. However, the sample numbers for rail are well off those of the rail population. The biggest thing I noticed is that Sunday saw the lowest ridership for both bus and rail, well below every other day. Tne standard deviation for rail is much larger than that of the bus.
 
 ## Part 4: Maryland Car Theft Rates (20 points)
 
@@ -92,8 +95,9 @@ Your editor has assigned you a story about car thefts in Maryland and wants you 
 car_thefts <- read_csv("https://raw.githubusercontent.com/dwillis/jour405/refs/heads/main/data/md_car_thefts.csv")
 rate_car_thefts <- rate_car_thefts |> mutate(car_thefts_2023_rate = `2023`/population * 10000)
 median_car_thefts_2023_rate <- rate_car_thefts |> summarize(median = median(car_thefts_2023_rate))
-total <-rate_car_thefts|> mutate(total = `2022` + `2023`)
+total <-rate_car_thefts|> mutate(total = sum(`2023`))
 ```
+These calculations reveal that Prince George's County and Baltimore City were responsible for the majority of car thefts reported in Maryland during 2023 and were well above the media car thefts rate in 2023. The lede of the article would say something along the lines of Prince George's County and Baltimore City were responsible for nearly two-thirds of the 23,871 car thefts committed in Maryland during 2023. 
 
 ## Part 5: Data Analysis Scenario (20 points)
 
@@ -101,11 +105,16 @@ You receive a tip that local emergency response times have gotten significantly 
 
 Write 3-4 sentences (no code!) explaining:
 1. What statistical measures would you calculate to verify this claim? (10 points)
+
 I would calculate the percentage change of response times for each individual unit, comparing last year to this year. For example, what was the average police response time last year compared to this year. This would either support or disprove the tip.
+
 2. What visualizations would help readers understand the trends? (5 points)
-A histogram would best help readers understand the trend. 
+
+I think three different histograms showing the different units' response time would best help the reader understand the trends. If you showed the average response time of each unit from the 12 months last year to the this year, the reader would be able to tell if the response time has gone up or down. For example, you would start with the average police response time in January 2022 and end with the average police response time in December 2023. If the bins go up, than you would know that the response times are going up.
+
 3. What additional context or data would you need to make this a complete story? (5 points)
 
+You would need to have the distance away that the call is from the station. For example, if you were reporting an incident 30 miles away from the fire station versus one that is only five miles away from the fire station, the response time would obviously be bigger for the farther away one. In order to make this a story, you would need to compare the response times of the different units to places of similar distance away.
 
 ### Submission Instructions
 - Save your work frequently
