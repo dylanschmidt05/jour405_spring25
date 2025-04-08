@@ -1,0 +1,143 @@
+---
+title: "ANOVA for Journalists: Analyzing College Admissions Test Scores"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+## Introduction
+
+In this exercise, we'll explore a common journalism question: *Are there significant differences in standardized test scores across different types of colleges?*
+
+We'll use ANOVA (Analysis of Variance) to determine if the observed differences in SAT scores across three college types (Public, Private, and Community College) represent real patterns or just random variation.
+
+## Task 1: Load Libraries and Create Sample Data
+
+```{r}
+library(tidyverse)
+```
+
+```{r create-data}
+# Set seed for reproducibility
+set.seed(123)
+
+# Create simulated SAT scores for admitted students across three college types
+# Scale is 400-1600 for total SAT
+public_college <- rnorm(100, mean = 1350, sd = 120)
+private_college <- rnorm(100, mean = 1450, sd = 100)
+community_college <- rnorm(100, mean = 1050, sd = 150)
+
+# Combine into a single dataframe
+admissions_data <- data.frame(
+  college_type = factor(rep(c("Public", "Private", "Community"), each = 100)),
+  sat_score = c(public_college, private_college, community_college)
+)
+
+# Ensure SAT scores are within realistic range (400-1600)
+admissions_data$sat_score <- pmin(pmax(admissions_data$sat_score, 400), 1600)
+
+# Quick look at the data
+head(admissions_data)
+```
+
+## Task 2: Calculate Basic Statistics
+
+```{r summary-stats}
+# Summary statistics by college type
+admission_summary <- admissions_data |>
+  group_by(college_type) |>
+  summarize(
+    mean_score = mean(sat_score),
+    median_score = median(sat_score),
+    sd_score = sd(sat_score),
+    min_score = min(sat_score),
+    max_score = max(sat_score)
+  )
+
+print(admission_summary)
+```
+
+**Task 3** Describe the data
+
+Write a couple of sentences describing the differences in SAT scores between types of colleges, using the descriptive statistics we just generated.
+
+The SAT scores of students at private colleges is significantly higher than those at public and community colleges. The mean score of a person at a private college is 1435 while those in public colleges had a mean score of 1360 and those in community colleges had a 1068 mean score. The standard deviation and range of community college students is also way bigger than public and private. The range of students at community colleges goes from a minimum score of 786 and a maximum score of 1393 with a standard deviation of 142. Those students in public schools had a range of 1072 to 1600 and a standard deviation of 109 while private SAT scores ranged from 1244 to 1600 and a standard deviation of 86. The data collected from private schools was most clustered around the mean.
+
+
+
+## Task 4: Visualize the Data
+
+Let's create visualizations to see the patterns:
+
+```{r visualize-distributions}
+# Create density plot showing overlapping distributions
+ggplot(admissions_data, aes(x = sat_score, fill = college_type)) +
+  geom_density(alpha = 0.5) +
+  labs(
+    title = "SAT Score Distributions by College Type",
+    subtitle = "Are these differences statistically significant?",
+    x = "SAT Score (400-1600 scale)",
+    y = "Density",
+    fill = "College Type"
+  ) +
+  theme_minimal() +
+  scale_fill_brewer(palette = "Set1")
+```
+
+```{r boxplot}
+# Create boxplot for another view
+ggplot(admissions_data, aes(x = college_type, y = sat_score, fill = college_type)) +
+  geom_boxplot() +
+  labs(
+    title = "SAT Scores by College Type",
+    x = "College Type",
+    y = "SAT Score"
+  ) +
+  theme_minimal() +
+  scale_fill_brewer(palette = "Set1")
+```
+
+## Task 5: Perform ANOVA Test
+
+```{r anova-test}
+# Run one-way ANOVA
+anova_result <- aov(sat_score ~ college_type, data = admissions_data)
+summary(anova_result)
+```
+
+The F-value is huge (284.3). The F-value measures the ratio of between-group variance to within-group variance, and this high value suggests the differences between college types far outweigh the variation within each type. The p-value is very low, indicating the differences between college types are statistically significant at any reasonable significance level. The three asterisks (***) highlight that this is significant at the 0.001 level. So we can say that with confidence that there are real differences in SAT scores between the three types of colleges.
+
+## Task 5: Compare the differences between specific pairs
+
+```{r post-hoc}
+# Tukey's HSD test to see which specific pairs of college types differ
+tukey_result <- TukeyHSD(anova_result)
+print(tukey_result)
+```
+
+The Tukey multiple comparisons test shows highly significant differences in SAT scores between all college types:
+
+* Private vs. Community: Private colleges have SAT scores that are 366.96 points higher than community colleges on average (p < 0.0001)
+* Public vs. Community: Public colleges have SAT scores that are 292.55 points higher than community colleges on average (p < 0.0001)
+* Public vs. Private: Public colleges have SAT scores that are 74.40 points lower than private colleges on average (p = 0.000021)
+
+All comparisons show extremely small p-values, indicating these differences are statistically significant at any conventional significance level. The 95% confidence intervals (shown in the "lwr" and "upr" columns) do not include zero for any comparison, further confirming these differences are statistically significant.
+
+## Task 6: Report the Findings
+
+Based on our analysis, we can now answer:
+
+1. Is there a significant difference in SAT scores across college types?
+
+There is a significant difference in SAT scores between those students in community colleges versus those in both public and private institutions. Community college students had a mean score of 1068, which is well below the marks for public colleges (1360) and private colleges (1435). There is a slight difference in SAT scores between public and private students but it is not large enough to consider it a significant difference. 
+
+2. Which specific college types differ from each other?
+
+Private and public schools differ from community colleges, with private schools having the largest mean and most consolidated data around that mean. Based on this data, we can safely say that there is a large difference between community college students and those at public and private schools.
+
+3. How large are these differences?
+
+According to Tukey's HSD test, the difference in scores between public and private schools is 74.40. Whilst private schools have a considerably higher test score average than public schools, that difference is non existent compared to the difference with community colleges. Private colleges had a 366 score difference compared to community colleges and public colleges had a difference of 292 compared to community colleges.
+
+Answer those questions, providing evidence for your answers, and then write a headline and a lead paragraph reporting these findings using active voice and focusing on the differences across types.
