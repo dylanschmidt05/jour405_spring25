@@ -5,6 +5,6 @@ https://247sports.com/season/2024-basketball/transferteamrankings/
 
 ```{r}
 library(tidyverse)
-transfer_portal <- read_csv("https://docs.google.com/spreadsheets/d/1FOa0688IUpsLtWkZG8z8XFuCxAiWteNmrGC9rWrGtN0/edit?gid=0#gid=0")
+transfer_portal <- read_csv("https://docs.google.com/spreadsheets/d/1FOa0688IUpsLtWkZG8z8XFuCxAiWteNmrGC9rWrGtN0/edit?usp=sharing")
 ```
 
