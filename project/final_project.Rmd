@@ -5,6 +5,9 @@ https://247sports.com/season/2024-basketball/transferteamrankings/
 
 ```{r}
 library(tidyverse)
-transfer_portal <- read_csv("https://docs.google.com/spreadsheets/d/1FOa0688IUpsLtWkZG8z8XFuCxAiWteNmrGC9rWrGtN0/edit?usp=sharing")
+transfer_portal <- read_csv("JOUR 405 Final project Data - Sheet1-3.csv")
 ```
+I think using the Pearson correlation coefficient will be helpful, especially as I determine if there is a correlation between the number of wins a team has and the number of transfers they brought in plus the quality of those tranfers. This will allow me to look at my hypothesis and see if number of wins is based on how mnay transfers a team brings in.
+
+Another one I want to use is a t-test to be able to validate my hypothesis and check if the average number of wins is different based on the number of transfers brought in and the quality of those additions. My idea would be to splt my data into two different groups: teams that brought in a high number of transfers and team's that brought in few or no transfers. The t-test would then compare the average win number of those two groups and see if the difference is statistically significant or just random. I would use a p-value of 0.05 to determine this. I would have to set a transfer total that splits the different programs into two groups.
 
