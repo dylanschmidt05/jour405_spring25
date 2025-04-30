@@ -1,0 +1,94 @@
+---
+title: "HW16_LinearRegression"
+output: html_document
+---
+
+---
+title: "Identifying Schools with Biggest Differences in Math Test Scores, Part 2"
+author: "Dylan Schmidt"
+---
+
+```{r}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+options(scipen = 999)
+```
+
+### Introduction
+
+We'll do what we did in class, but with a twist: instead of Montgomery County, Pa., you'll be working with data from Montgomery County, Md. Same basic idea, though: linear regression looking at free and reduced-price meals and math test scores.
+
+Just as in the exercise, you will create a scatterplot to visualize the relationship between the FARMS (Free and Reduced-price Meal System) percentage and the percentage of students who met or exceeded math expectations. You'll then use linear regression to identify the schools that show the biggest differences between their actual and expected math test scores and evaluate the results of your model.
+
+### Loading the Data
+
+First, let's load the data into a data frame using the read_csv() function from the tidyverse library.
+
+```{r}
+schools <- read_csv("https://raw.githubusercontent.com/dwillis/jour405_files/refs/heads/main/montgomery_md.csv")
+```
+### Task: Create a Scatterplot and Describe the Results (5 points)
+
+First, let's create a scatterplot to visualize the relationship between the FARMS percentage and the percentage of students who met or exceeded math expectations. We'll use ggplot2 to create the plot and add a linear regression line.
+
+```{r}
+schools |>
+  ggplot(aes(x = `FARMS Pct`, y = `% Met or Exceeded Math Expectations`)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE, color = "red") +
+  labs(x = "FARMS Percentage", y = "% Met or Exceeded Math Expectations", title = "Scatterplot of Math Expectations vs FARMS Percentage")
+```
+Based on what you see here, what's the relationship between FARMS percentage and math test scores? Compare this scatterplot to the one you made in the class activity.
+
+There is a negative relationship between the FARMS percentage and math test scores, which is the opposite of the data we looked at in class. While there are some data points off of the line of best fit, those few schools are outliers in comparison. Most of the data is clustered around the line of best fit, meaning that there really is a relationship between these two variables.
+
+
+### Task: Linear Regression Model (7 points)
+
+Next, you'll perform a linear regression analysis using the lm() function. We'll set the percentage of students who met or exceeded math expectations as the dependent variable, and the FARMS percentage as the independent variable. In other words, if we know the FARMS percentage for a school, how reliably can we predict its math score?
+
+```{r}
+model <- lm(`% Met or Exceeded Math Expectations` ~ `FARMS Pct`, data = schools)
+
+summary(model)
+```
+
+Provide the model's output for the three statistics mentioned in the class activity.
+
+The p-value is less than 0.00000000000000022.
+The adjusted R-squared value is 0.6734
+The intercept is 68.04878 and the FARMS coefficient is -0.59511.
+
+Based on what you've learned so far, what does it tell us about the nature of the relationship between FARMS percentage and math scores? Is this model worth exploring further? Why or why not?
+
+These statistics tells us that the observed results are unlikely to have occurred without the FARMS percentage, meaning that there is a relationship between them. Since the adjusted R-squared value is relatively close to 100, it is significant. The negative slope value tells us that there is a negative relationship between the FARMS percentage and the math test scores, showing that as the FARMS percentage increases, the percentage of students who met or exceed the math expectations. I think this model is worth exploring further because it shows there is really a relationship between the two variables and therefore we should go further in depth on them.
+
+### Task: Identifying Schools with Biggest Residuals (3 points)
+
+Let's calculate and examine the residuals next. 
+
+```{r}
+schools$predicted <- predict(model)
+
+# Calculate the residuals
+schools <- schools |> 
+  mutate(residual = `% Met or Exceeded Math Expectations` - predicted)
+
+# Sort the data frame by the absolute value of the residuals in descending order
+schools <- schools |>
+  mutate(abs_residual = abs(residual)) |>
+  arrange(desc(abs_residual))
+
+```
+
+Look at the absolute values of the residuals; what are the largest differences between the predicted result and the actual math scores? Pick two schools with the largest residuals. Find the zip codes where they are located and using the CensusReporter.org website, describe the most interesting demographic data from each zip code.
+
+The largest differences between the predicted result and the actual math scores is Fox Chapel Elementary school and Broad Acres Elementary school. The most interesting demographic data from the first zip code is how well diversified Germantown is. 28 percent of the population is Black, 23 percent is White, 22 percent is Hispanic and 21 percent is Asian. The biggest thing I found looking at the demographic data of the second zip code is that the median household income is $93,322 which is nearly 10,000 dollars less than the statewide household median income.
+
+## Task: Evaluate the model (5 points)
+
+Describe what conclusions you'd draw from this model's results and how it would influence a story pitch about the school board member and math scores.
+
+The conclusions I would draw from this model's results is that there is a negative relationship between a school's FARMS percentage and the percentage of students who either meet or exceed the math expectations. Unlike the data that we looked at in class earlier, the data from Montgomery County schools is conclusive and shows an actual correlation between the two variables. 
+
+After seeing the results from this model, I would be more inclined to produce a story on the correlation between FARMS percentage and math scores as well as back up the claims that the school board member made in the in=class activity. There is clear evidence that the FARMS percentage influences the percentage of students who meet or exceed math expectations and demonstrates that schools with fewer students using the FARMS will have better standardized math test scores. 
