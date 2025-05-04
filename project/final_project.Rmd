@@ -3,11 +3,90 @@ https://docs.google.com/spreadsheets/d/1FOa0688IUpsLtWkZG8z8XFuCxAiWteNmrGC9rWrG
 https://247sports.com/season/2024-basketball/transferteamrankings/
 
 
-```{r}
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+options(scipen=999)
 library(tidyverse)
-transfer_portal <- read_csv("JOUR 405 Final project Data - Sheet1-3.csv")
+install.packages("janitor")
+library(janitor)
+transfer_portal <- read_csv("JOUR 405 Final project Data - Sheet1-3.csv") |> clean_names()
 ```
 I think using the Pearson correlation coefficient will be helpful, especially as I determine if there is a correlation between the number of wins a team has and the number of transfers they brought in plus the quality of those tranfers. This will allow me to look at my hypothesis and see if number of wins is based on how mnay transfers a team brings in.
 
 Another one I want to use is a t-test to be able to validate my hypothesis and check if the average number of wins is different based on the number of transfers brought in and the quality of those additions. My idea would be to splt my data into two different groups: teams that brought in a high number of transfers and team's that brought in few or no transfers. The t-test would then compare the average win number of those two groups and see if the difference is statistically significant or just random. I would use a p-value of 0.05 to determine this. I would have to set a transfer total that splits the different programs into two groups.
 
+```{r}
+# Calculate statistics on the number of transfers
+new_transfers <- transfer_portal |> 
+  summarize(
+    mean = mean(total_number_of_transfers),
+    sd = sd(total_number_of_transfers),
+  )
+
+new_transfers
+```
+```{r}
+# Calculate statistics on the team's number of wins
+new_wins <- transfer_portal |> 
+  summarize(
+    mean = mean(team_wins),
+    sd = sd(team_wins),
+  )
+
+new_wins
+```
+```{r}
+# Calculate statistics on the team's number of losses
+new_losses <- transfer_portal |> 
+  summarize(
+    mean = mean(team_losses),
+    sd = sd(team_losses),
+  )
+
+new_losses
+```
+```{r}
+# Calculate statistics on the team's average transfer rating
+new_transfer_ratings <- transfer_portal |> 
+  summarize(
+    mean = mean(average_transfer_rating),
+    sd = sd(average_transfer_rating),
+  )
+
+new_transfer_ratings
+```
+```{r}
+# Calculate statistics on the team's average transfer rating
+new_points <- transfer_portal |> 
+  summarize(
+    mean = mean(total_points),
+    sd = sd(total_points),
+  )
+
+new_points
+```
+```{r}
+transfer_portal |> summarize(correlation = cor(total_number_of_transfers, team_wins, method="pearson"))
+```
+
+```{r}
+transfer_portal |>
+  ggplot(aes(x = total_number_of_transfers, y = team_wins)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE, color = "red") +
+  labs(x = "Number of transfers", y = "Team's wins last season", title = "Scatterplot of total number of transfers vs team's wins")
+```
+The scatterplot shows that there is actually a negative correlation between a team's number of transfers and the amount of wins they recorded last season. This further emphasizes my hypothesis that bringing in more transfers doesn't lead to success, instead the teams with continuity tend to have better seasons.
+
+```{r}
+transfer_portal |>
+  ggplot(aes(x = total_points, y = team_wins)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE, color = "red") +
+  labs(x = "Total points of transfers", y = "Team's wins last season", title = "Scatterplot of total points of transfers vs team's wins")
+```
+The scatterplot shows that the quality of transfers a program brings it is a tiny bit more important than the number of transfers brought in. Those schools with better transfers found more success than the ones who just filled out their roster with a ton of transfers.
+
+Remaining things to do:
+- Regression
+- T-test to see how accurate my hypothesis really is
