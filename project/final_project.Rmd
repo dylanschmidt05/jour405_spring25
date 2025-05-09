@@ -67,6 +67,7 @@ new_points
 ```
 ```{r}
 transfer_portal |> summarize(correlation = cor(total_number_of_transfers, team_wins, method="pearson"))
+transfer_portal |> summarize(correlation = cor(total_points, team_wins, method="pearson"))
 ```
 
 ```{r}
@@ -87,6 +88,47 @@ transfer_portal |>
 ```
 The scatterplot shows that the quality of transfers a program brings it is a tiny bit more important than the number of transfers brought in. Those schools with better transfers found more success than the ones who just filled out their roster with a ton of transfers.
 
-Remaining things to do:
-- Regression
-- T-test to see how accurate my hypothesis really is
+```{r}
+model <- lm(`team_wins` ~ `total_number_of_transfers`, data = transfer_portal)
+
+summary(model)
+```
+```{r}
+transfer_portal$predicted <- predict(model)
+
+# Calculate the residuals
+transfer_portal <- transfer_portal |> 
+  mutate(residual = `team_wins` - predicted)
+
+# Sort the data frame by the absolute value of the residuals in descending order
+transfer_portal <- transfer_portal |>
+  mutate(abs_residual = abs(residual)) |>
+  arrange(desc(abs_residual))
+
+```
+
+```{r}
+below_mean = ((23 + 24 + 35 + 26 + 25 + 17 + 30 + 17 + 17 + 24 + 32 + 32 + 20 + 15 + 19 + 14 + 36 + 17 + 14 + 23 + 15 + 12 + 23 + 27 + 28 + 12 + 27 + 35 + 18 + 17 + 25 + 12 + 16 + 12 + 15 + 31 + 21 + 14 + 30 + 28)/40)
+above_mean <- ((13 + 22 + 20 + 22 + 27 + 21 + 22 + 17 + 25 + 21 + 15 + 13 + 21 + 19 + 21 + 7 + 27 + 15 + 21 + 20 + 24 + 16 + 19 + 20 + 23 + 17 + 24 + 16 + 22 + 16 + 7 + 13 + 19 + 24 + 14 + 20 + 14 + 17+ 27)/39)
+
+below_mean
+above_mean
+
+```
+**Hypotheses:**
+Null: Schools with more transfers brought in produce more wins
+Alternative: Schools with less transfers brought in produce more wins
+```{r}
+alpha_level <- 0.05 # Replace with the appropriate value
+
+# Perform a one-sample t-test
+# Since we want to know if scores improved (increased), we use a one-sided test (alternative = "greater")
+t_test_result <- t.test(
+  below_mean,
+  above_mean,
+  alternative = "greater",
+)
+
+# Display the results
+t_test_result
+```
