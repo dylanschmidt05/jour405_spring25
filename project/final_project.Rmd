@@ -1,7 +1,4 @@
-https://docs.google.com/spreadsheets/d/1FOa0688IUpsLtWkZG8z8XFuCxAiWteNmrGC9rWrGtN0/edit?gid=0#gid=0
-
-https://247sports.com/season/2024-basketball/transferteamrankings/
-
+Introduction: The Impact of transfers in college basketball
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -11,9 +8,21 @@ install.packages("janitor")
 library(janitor)
 transfer_portal <- read_csv("JOUR 405 Final project Data - Sheet1-3.csv") |> clean_names()
 ```
+Background information on the topic:
+
+The transfer portal has become such a big point of emphasis for head coaches who are looking to turn their programs around or are in need of a team restocking with tons of players graduating. This year, there have been upwards of 2,000 men's basketball players entering the transfer portal, leading to daily chaos about who is going where and what schools are interested in the different players.
+
+My new idea is to see if the number of transfers brought in actually correlates to more wins. I want to see if the teams more focused on bringing guys in through the portal or those who use recruiting and keep their players around have more success. Since there are so many teams in college basketball, I want to narrow my topic to just schools in the power 5 conferences. I will take the schools record from last year and compare it to the number of transfers they brought in throughout the offseason. 
+
+Statistics I plan to use:
+
 I think using the Pearson correlation coefficient will be helpful, especially as I determine if there is a correlation between the number of wins a team has and the number of transfers they brought in plus the quality of those tranfers. This will allow me to look at my hypothesis and see if number of wins is based on how mnay transfers a team brings in.
 
 Another one I want to use is a t-test to be able to validate my hypothesis and check if the average number of wins is different based on the number of transfers brought in and the quality of those additions. My idea would be to splt my data into two different groups: teams that brought in a high number of transfers and team's that brought in few or no transfers. The t-test would then compare the average win number of those two groups and see if the difference is statistically significant or just random. I would use a p-value of 0.05 to determine this. I would have to set a transfer total that splits the different programs into two groups.
+
+I want to calculate the average number of transfers brought in last season by the 79 schools in Power 5 conferences (Big Ten, ACC, Big East, SEC, Big 12). I will use the mean value calculated later to help me conduct my t-test. I also want to get an idea of how close the data is around that mean, using the value given from the standard deviation to get a gauge on that.
+
+Mean and Standard Deviation (Number of Transfers)
 
 ```{r}
 # Calculate statistics on the number of transfers
@@ -25,6 +34,11 @@ new_transfers <- transfer_portal |>
 
 new_transfers
 ```
+The mean value of 4.83 displays that most schools brought in at least four transfers last season, with a good portion most likely bringing in upwards of seven transfers. A standard deviation of 2.44 gives us a rough range of 2.5 to 7 transfers where most Power 5 are located last season. While the small standard deviation value may seem to suggest that most of the data is clustered around the mean — given the context of the data with such a small range between the minimum and maximum values — the standard deviation value actually showcases a very spread out data collection.
+
+Mean and Standard Deviation (Team's wins last season)
+
+I want to calculate the average number of wins last season by the 79 schools in Power 5 conferences (Big Ten, ACC, Big East, SEC, Big 12) to help me determine whats a good amount of wins is. Everyone always states that a team has a good season but we never really know relative to what standard that is compared to. Calculating the mean number of wins will allow us to determine who had a successful season and most likely went on a deep run in the tournament. I also want to get an idea of how close the data is around that mean, using the value given from the standard deviation to get a gauge on that.
 ```{r}
 # Calculate statistics on the team's number of wins
 new_wins <- transfer_portal |> 
@@ -35,16 +49,12 @@ new_wins <- transfer_portal |>
 
 new_wins
 ```
-```{r}
-# Calculate statistics on the team's number of losses
-new_losses <- transfer_portal |> 
-  summarize(
-    mean = mean(team_losses),
-    sd = sd(team_losses),
-  )
+The mean value of 20.39 displays that most Power 5 schools posted at least 20 wins, a mark that doesn't really take into account strength of schedule. However, a 20+ win season is still widely considered as a successful season, especially with such a long season where teams are susceptible to off nights. A standard deviation of 6.18 gives us a rough range of 14 to 26 wins where most Power 5 teams are located last season. This high value demonstrates how sporadic sports are, as the really good teams separate themselves and the subpar teams are exposed throughout the season.
 
-new_losses
-```
+Mean and Standard Deviation (Team's average transfer rating)
+
+I want to calculate the average transfer rating of the players brought in last season by the 79 schools in Power 5 conferences (Big Ten, ACC, Big East, SEC, Big 12) to help me look at the quality of players brought in by these big schools. 247 Sports' rating system allows fans to get a sense of how good a player is, and finding the mean rating of that team's transfer grouping deciphers which teams just brought in one or two good players versus those who brought in a well-rounded class. I also want to get an idea of how close the data is around that mean, using the value given from the standard deviation to get a gauge on that.
+
 ```{r}
 # Calculate statistics on the team's average transfer rating
 new_transfer_ratings <- transfer_portal |> 
@@ -55,8 +65,13 @@ new_transfer_ratings <- transfer_portal |>
 
 new_transfer_ratings
 ```
+The mean value of 87.52 shows that most Power 5 schools bring in talented transfer classes, which may highlight why the mean win total was so high; the good players are attracted to an opportunity to play in a big conference filled with talented squads. While the standard deviation is high, that number is deceptive. Most schools were clustered between 87 and 96, with a few schools such as Marquette, Iowa and Purdue failing to bring in any transfers.
+
+Mean and Standard Deviation (Team's total transfer points based on 247 Sports)
+
+I want to calculate the average transfer points of the players brought in last season by the 79 schools in Power 5 conferences (Big Ten, ACC, Big East, SEC, Big 12) based off 247 Sports' point system attributed to how good a player is in their eyes. I also want to get an idea of how close the data is around that mean, using the value given from the standard deviation to get a gauge on that.
 ```{r}
-# Calculate statistics on the team's average transfer rating
+# Calculate statistics on the team's average transfer points
 new_points <- transfer_portal |> 
   summarize(
     mean = mean(total_points),
@@ -65,10 +80,21 @@ new_points <- transfer_portal |>
 
 new_points
 ```
+The mean value of 21.75 is relatively high considering how many schools didn't bring in very high quality transfers. Schools like Northwestern, Notre Dame and Florida State failed to bring in talented transfers last season, bringing the average down significantly. It makes sense, though, given how poor those schools have been in basketball recently, finishing with the worst records in their respective conferences. The standard deviation is pretty big which highlights the talent disparity between schools who are repeatedly bad and those who are consisting going on deep runs in the tournament.
+
+Correlation (Team's wins last season vs total number of transfers and team's wins last season vs team's total transfer points based on 247 Sports)
+
+I want to see if there is a correlation between the number of wins a team had last season and the amount of transfers they brought in last year and then the quality of transfers brought in based on 247 Sports' point system. The correlation between these two categories will help me decipher if there is a relationship between transfers brought in and the team's who have a good season. 
+
 ```{r}
 transfer_portal |> summarize(correlation = cor(total_number_of_transfers, team_wins, method="pearson"))
 transfer_portal |> summarize(correlation = cor(total_points, team_wins, method="pearson"))
 ```
+Based off the results displayed above, there is no relationship between the quality of transfers brought in by a team and their eventual win total. A correlation value of 0.075 indicates a lack of connection between those categories. On the other side, there is a slight negative relationship between the number of transfers brought in and the team's win total. The -0.235 correlation value shows a negative relationship between the two variables, although the number is relatively small.
+
+Scatterplot 1
+
+While the previous code block showed that there is a slight negative relationship between a team's win total last season and the amount of transfers they brought in, I wanted to see all the data points on a scatterplot to see how those points compare to the line of best fit.
 
 ```{r}
 transfer_portal |>
@@ -77,7 +103,9 @@ transfer_portal |>
   geom_smooth(method = "lm", se = FALSE, color = "red") +
   labs(x = "Number of transfers", y = "Team's wins last season", title = "Scatterplot of total number of transfers vs team's wins")
 ```
-The scatterplot shows that there is actually a negative correlation between a team's number of transfers and the amount of wins they recorded last season. This further emphasizes my hypothesis that bringing in more transfers doesn't lead to success, instead the teams with continuity tend to have better seasons.
+The scatterplot shows that there is actually a negative correlation between a team's number of transfers and the amount of wins they recorded last season. This further emphasizes my hypothesis that bringing in more transfers doesn't lead to success, instead the teams with continuity tend to have better seasons. However, the correlation is minimal and the data points are quite chaotically spread out around the scatterplot, indicating that there really isn't much if not any relationship between the two variables.
+
+While the previous code block showed that there is no relationship between a team's win total last season and the quality of the transfers they brought based on 247 Sports' point system, I wanted to see all the data points on a scatterplot to get an idea of how the differnt schools relate to each other.
 
 ```{r}
 transfer_portal |>
@@ -86,14 +114,16 @@ transfer_portal |>
   geom_smooth(method = "lm", se = FALSE, color = "red") +
   labs(x = "Total points of transfers", y = "Team's wins last season", title = "Scatterplot of total points of transfers vs team's wins")
 ```
-The scatterplot shows that the quality of transfers a program brings it is a tiny bit more important than the number of transfers brought in. Those schools with better transfers found more success than the ones who just filled out their roster with a ton of transfers.
+The scatterplot shows that the quality of transfers a program brings in is a tiny bit more important than the quantity of transfers brought in. Those schools with better transfers found more success than those schools who just brought in transfers to fill out their roster, not really caring about quality or if they even fit the team's culture. However, there are plenty of schools who brought in top-tier transfers and didn't have much success last year. Indiana, West Virginia and Washington are just a few examples of schools who earned a lot of points from 247 Sports but still had unsuccessful seasons, with all three failing to make the NCAA Tournament.
+
+Regression model and predictions
+
+After calculating the correlation values between some of the different variables, I want to create a model to predict the amount of wins a team should have had last year based on how many transfers they brought in. Then, I will compare those predictions to the amount of wins they actually had to generate that schools residual. This model will help me determine what schools under performed relative to where they should have been.
 
 ```{r}
 model <- lm(`team_wins` ~ `total_number_of_transfers`, data = transfer_portal)
 
 summary(model)
-```
-```{r}
 transfer_portal$predicted <- predict(model)
 
 # Calculate the residuals
@@ -104,24 +134,22 @@ transfer_portal <- transfer_portal |>
 transfer_portal <- transfer_portal |>
   mutate(abs_residual = abs(residual)) |>
   arrange(desc(abs_residual))
-
 ```
+Since the Adjusted R-squared value is so low, it means that the model doesn't actually fit the data and that the amount of transfers brought in doesn't actually correlate to the win total that team has that season. While the median residual value is relatively close to 0, the model still doesn't have much relevance to given the low Adjusted R-squared value. 
 
-```{r}
-below_mean = ((23 + 24 + 35 + 26 + 25 + 17 + 30 + 17 + 17 + 24 + 32 + 32 + 20 + 15 + 19 + 14 + 36 + 17 + 14 + 23 + 15 + 12 + 23 + 27 + 28 + 12 + 27 + 35 + 18 + 17 + 25 + 12 + 16 + 12 + 15 + 31 + 21 + 14 + 30 + 28)/40)
-above_mean <- ((13 + 22 + 20 + 22 + 27 + 21 + 22 + 17 + 25 + 21 + 15 + 13 + 21 + 19 + 21 + 7 + 27 + 15 + 21 + 20 + 24 + 16 + 19 + 20 + 23 + 17 + 24 + 16 + 22 + 16 + 7 + 13 + 19 + 24 + 14 + 20 + 14 + 17+ 27)/39)
-
-below_mean
-above_mean
-
-```
 **Hypotheses:**
-Null: Schools with more transfers brought in produce more wins
-Alternative: Schools with less transfers brought in produce more wins
+Null: Schools with fewer transfers produced less wins than teams with more transfers 
+Alternative: Schools with fewer transfers produced more wins than teams with more transfers 
+
+I took the mean number of transfers brought in last season to split up my two-sample one-sided t-test, with schools who brought in less than five transfers in one group and the other group filled with schools who have brought in at least five transfers. Then, I took the number of wins that team got last season and put it into the two different lists below. Conducting a t-test is important to have confirmation whether my hypothesis that bringing in less transfers actually leads to more wins.
+
 ```{r}
+below_mean <- c(23, 24, 35, 26, 25, 17, 30, 17, 17, 24, 32, 32, 20, 15, 19, 14, 36, 17, 14, 23, 15, 12, 23, 27, 28, 12, 27, 35, 18, 17, 25, 12, 16, 12, 15, 31, 21, 14, 30, 28)
+above_mean <- c(13, 22, 20, 22, 27, 21, 22, 17, 25, 21, 15, 13, 21, 19, 21, 7, 27, 15, 21, 20, 24, 16, 19, 20, 23, 17, 24, 16, 22, 16, 7, 13, 19, 24, 14, 20, 14, 17, 27)
+
 alpha_level <- 0.05 # Replace with the appropriate value
 
-# Perform a one-sample t-test
+# Perform a two-sample t-test
 # Since we want to know if scores improved (increased), we use a one-sided test (alternative = "greater")
 t_test_result <- t.test(
   below_mean,
@@ -131,4 +159,12 @@ t_test_result <- t.test(
 
 # Display the results
 t_test_result
+
 ```
+Based on the results of the t-test and the determined p-value of 0.018, we can safely reject the null hypothesis that schools with fewer transfers managed less wins than those who brought in a high number of transfers. The t-test proves my prior theory that bringing in less transfers results in team's securing more wins. The mean of wins of the two different groups also highlights this idea, as the schools with less than five transfers produced a mean of 21.95 wins while those schools with at least five transfers brought home a mean win total of 19.
+
+Final section
+
+I think a story comparing a team who brought in less transfers but had a good season (Houston) with a team who brought in a ton of transfers and had a bad season (USC). The story would focus on the differences that the two coaches do in terms of recruiting transfers and what attributes those coaches focus on to determine if that player is the right fit for the team. Obviously there are instances of team's who find success bringing a high number of transfers but based off the results of my t-test and final project, those programs are rarities in modern college basketball. Even when a new coach is tasked with restocking its roster (Maryland next season), it usually takes a year or two for those programs to return to a successful campaign. With the t-test rejecting the null hypothesis and showing that less transfers likely leads to a more successful season, I would be interested to see if college coaches look for more loyal players who are going to be committed to that school long-term. Another thing I would incorporate in my story is the evolving NIL deals in college basketball to see if that factors into the success of a team. I would be interested to see if teams with more NIL money will produce more wins.
+
+The biggest problem with my project is that there are other factors that are involved for how many wins a team gets. Strength of schedule, how much NIL money that school has and the circumstances going on at that school. New coaches who are tasked with entirely rebuilding a team like Buzz Williams may not find much success in their first season and could sway the data. I think interviewing both coaches to see what they look for in recruiting transfers and then interviewing college basketball experts to get their take on how much NIL factors into modern basketball. 
